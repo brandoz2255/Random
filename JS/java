@@ -1,0 +1,53 @@
+const readline = require('readline-sync');
+
+const ConversionType = {
+    InchesToCentimeters: 0,
+    CentimetersToInches: 1,
+    OuncesToGrams: 2,
+    GramsToOunces: 3,
+    MilesToKilometers: 4,
+    KilometersToMiles: 5,
+    CelsiusToFahrenheit: 6
+};
+
+// Function to get the conversion type
+function getConversionType() {
+    console.log("\x1b[1;32mPlease input the following to use this program for conversion.\x1b[0m");
+    console.log("\x1b[1;32m'I' Will convert Inches to Centimeters.\x1b[0m");
+    console.log("\x1b[1;32m'C' Will convert Centimeters to Inches.\x1b[0m");
+    console.log("\x1b[1;32m'O' Will convert Ounces to Grams.\x1b[0m");
+    console.log("\x1b[1;32m'G' Will convert from Grams to Ounces.\x1b[0m");
+    console.log("\x1b[1;32m'M' Will convert from Miles to Kilometers.\x1b[0m");
+    console.log("\x1b[1;32m'K' Will convert Kilometers to miles.\x1b[0m");
+    console.log("\x1b[1;32m'T' Will convert Celsius to Fahrenheit.\x1b[0m");
+
+    const message = readline.question("Type here: ");
+
+    switch (message.toUpperCase()) {
+        case 'I':
+            return ConversionType.InchesToCentimeters;
+        case 'C':
+            return ConversionType.CentimetersToInches;
+        case 'O':
+            return ConversionType.OuncesToGrams;
+        case 'G':
+            return ConversionType.GramsToOunces;
+        case 'M':
+            return ConversionType.MilesToKilometers;
+        case 'K':
+            return ConversionType.KilometersToMiles;
+        case 'T':
+            return ConversionType.CelsiusToFahrenheit;
+        default:
+            console.log("\x1b[1;32m---------------------------------------------------\x1b[0m");
+            console.log("I'm sorry, I did not understand the value. Please type the correct value.");
+            return -1;  // You can choose a special value for representing an invalid input
+    }
+}
+
+// Your program logic goes here
+const conversionType = getConversionType();
+
+// Use the obtained conversion type as needed
+console.log(`Selected Conversion Type: ${conversionType}`);
+
