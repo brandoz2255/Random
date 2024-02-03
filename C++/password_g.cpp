@@ -28,10 +28,108 @@ class Mainprogram {
 private: 
     std::string customChars; // Declare customChars as a class member
 
+    // Function to handle file operations
+    void updatePasswordFile(const std::string& username, const std::string& password) {
+        std::fstream file("password.pass", std::ios::in | std::ios::out);
+
+        if (!file) {
+            std::cerr << "Error opening file for update." << std::endl;
+            return;
+        }
+
+        std::vector<std::string> lines;
+        std::string line;
+        bool userFound = false;
+
+        // Read the file line by line
+        while (std::getline(file, line)) {
+            size_t pos = line.find(username);
+
+            // Check if the username is found in the line
+            if (pos != std::string::npos) {
+                // Update the line with the new password
+                line = username + " " + password;
+                userFound = true;
+            }
+
+            lines.push_back(line);
+        }
+
+        // If the user was not found, add a new entry
+        if (!userFound) {
+            lines.push_back(username + " " + password);
+        }
+
+        // Clear the content of the file
+        file.close();
+        std::ofstream outFile("password.pass", std::ios::trunc);
+
+        // Write the modified lines back to the file
+        for (const auto& updatedLine : lines) {
+            outFile << updatedLine << std::endl;
+        }
+
+        std::cout << "Password file updated successfully." << std::endl;
+    }
 
 
 
 public:
+
+
+    // Add a new function for editing an existing username
+    void editExistingUsername() {
+        std::string existingUsername;
+        std::cout << "Enter the existing username you want to edit: ";
+        std::cin >> existingUsername;
+
+
+        std::ifstream file("password.pass"); // Open the file containing usernames and passwords
+            std::string line;
+            bool usernameFound = false;
+            std::string lineToUpdate;
+
+        std::ifstream file("password.pass"); // Replace with your actual file name
+            std::string line;
+            bool usernameFound = false;
+
+            // Check if the username exists in the file
+            while (std::getline(file, line)) {
+                if (line == existingUsername) {
+                    usernameFound = true;
+                    break;
+                }
+            }
+
+            file.close();
+
+
+
+
+
+        // Check if the username exists in the file
+        if (usernameExists(existingUsername)) {
+            std::string newPassword = generate_password(12, true, true, true, true, "!@#");  // Generate a new password
+            updatePasswordFile(existingUsername, newPassword);
+            std::cout << "Password for username '" << existingUsername << "' has been updated.\n";
+            std::cout << "Generated new password:\n" << newPassword << "\n";
+        } else {
+            std::cout << "Username not found. Please make sure the username exists.\n";
+        }
+    }
+
+    // Function to check if a username exists in the file
+    bool usernameExists(const std::string& username) {
+        std::ifstream file("passwords.txt");
+        std::string line;
+        while (std::getline(file, line)) {
+            if (line.find(username) != std::string::npos) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
 
@@ -78,6 +176,7 @@ public:
     std::tuple<std::string, std::string, int> userInput() {
         std::string keyword1, keyword2;
         int passwordLength;
+        std::string customChars;  // Declare customCha
 
         std::cout << "\n----------------------------------------------------------\n" << std::endl;
         std::cout << "Please enter the first keyword: ";
@@ -97,15 +196,31 @@ public:
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // Clear the buffer
             }
         }      
+        
+        std::cout << "Do you want to customize the characters in your password? (y/n): " << std::endl;
+        char customizeChoice;
+        std::cin >> customizeChoice;
 
-        std::cout << "Enter custom characters (if any) for password generation (or press Enter to skip): ";
-        std::getline(std::cin >> std::ws, customChars);  // Allow custom characters, press Enter to skip
+        if (customizeChoice == 'y' || customizeChoice == 'Y') {
+                std::cout << "Enter custom characters for password generation (or press Enter to skip): ";
+                std::getline(std::cin >> std::ws, customChars);
 
+
+                if (customChars.empty()) {
+                    std::cout << "Alright, skipping customization. We'll surprise you with a spicy mix!" << std::endl;
+                } else {
+                    std::cout << "Custom characters set to: " << customChars << std::endl;
+                }
+
+
+
+
+        }
 
 
     std::cout << "\n----------------------------------------------------------\n" << std::endl;
 
-    return std::make_tuple(keyword1, keyword2, passwordLength, customChars);
+    return std::make_tuple(keyword1, keyword2, passwordLength);
 }
 
 
@@ -242,6 +357,33 @@ int main() {
 
     while (true) {
         mp.userGreeting();
+
+
+
+        // Prompt the user for additional actions
+        std::cout << "\nDo you want to edit an existing username? (yes/no): ";
+        std::string editChoice;
+        std::cin >> editChoice;
+
+
+        if (editChoice == "yes") {
+                    mp.editExistingUsername();
+                } else if (editChoice == "no") {
+                    break; // Exit the loop if the user decides to stop editing usernames
+                } else {
+                    std::cout << "Invalid choice. Please enter 'yes' or 'no'.\n";
+                }
+
+
+      
+
+        if (editChoice == "yes") {
+            mp.editExistingUsername();
+        }
+
+
+
+
 
         std::cout << "\nWelcome to the Password Generator app C++ edition" << std::endl; 
         std::cout << "\nPlease input a key word to word to use to generate username" << std::endl;
